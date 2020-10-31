@@ -103,3 +103,8 @@ SingleString::SingleString(String str, Point pos, Arduino_ST7789*tft, uint32_t s
   this->tDelay   = tDelay;
   this->filler = new CellMaker(pos, tft, sizeFont, bgColor, tDelay);
 }
+SingleString::~SingleString()
+{
+  delete this->filler;
+  delete this->str;
+}

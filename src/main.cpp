@@ -47,10 +47,15 @@ void setup() {
   byte arr[] = {0x01,
                 0x01,0x00,0x00,
                 0x02,0x00,0xf1,
-                0x03,0x03,
-                0x04,0x97,0x00};
-  pb->ReadString(arr, 13);
-  pb->DrawPage();
+                0x03,0x07,
+                0x04,'a','b','c',0x00};
+  byte arr2[] ={0x01,
+                0x01,0x00,0x50,
+                0x02,0x00,0xf1,
+                0x03,0x07,
+                0x04,'a','b','c',0x00};
+  pb->ReadString(arr, 14);
+  pb->ReadString(arr2, 14);
   // ss = new SingleString("ready", {0,0}, &tft, 7U);
   // ss->Draw();
   // ss->SetPos(0,32);

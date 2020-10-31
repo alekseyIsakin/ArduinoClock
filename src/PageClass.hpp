@@ -72,6 +72,7 @@ class SingleString : BaseUIelement
     SingleString(String str, Point pos, Arduino_ST7789*tft, uint32_t sizeFont=3, 
                  int strColor=BLUE, int bgColor=BLACK, 
                  uint16_t tDelay=75);
+    ~SingleString();
 };
 
 class MultiString : SingleString

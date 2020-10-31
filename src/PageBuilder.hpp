@@ -20,7 +20,6 @@ class PageBuilder
 {
 private:
   SingleString*CompileSingleString(byte*, uint32_t);  
-  BaseUIelement*UI_arr;
 
   Arduino_ST7789* tft;
 public:
