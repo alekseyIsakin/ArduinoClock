@@ -3,13 +3,19 @@
 
 #ifndef PAGECLASS
 #define PAGECLASS
+
+class BaseUIelement
+{
+  virtual void Draw();
+};
+
 struct Point
 {
   uint8_t X;
   uint8_t Y;
 };
 
-class CellMaker
+class CellMaker : BaseUIelement
 {
 private:
     int           Lenght;
@@ -36,7 +42,7 @@ public:
               int cellColor=BLACK, uint16_t tDelay=75);
 };
 
-class SingleString
+class SingleString : BaseUIelement
 {
   private:
   public:
@@ -59,7 +65,7 @@ class SingleString
     void NewString(String);
     void ClearLastString();
 
-    void Redraw();
+    void Draw();
     void ForceRedraw();
 
     void SetPos(uint8_t, uint8_t);

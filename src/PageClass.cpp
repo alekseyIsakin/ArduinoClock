@@ -64,7 +64,7 @@ void SingleString::ClearLastString()
   }
 }
 
-void SingleString::Redraw()
+void SingleString::Draw()
 {
   if (redraw){
     ForceRedraw();

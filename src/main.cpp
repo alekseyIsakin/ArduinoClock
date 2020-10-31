@@ -6,6 +6,8 @@
 #include <Adafruit_GFX.h>
 #include <Fonts/FreeSansBold9pt7b.h>
 
+#include <PageBuilder.hpp>
+
 #define TFT_DC    7
 #define TFT_RST   8 
 // #define TFT_CS    10 
@@ -25,15 +27,8 @@
  #07 BLK -> NC
  */
 Arduino_ST7789 tft = Arduino_ST7789(TFT_DC, TFT_RST);
-
-uint32_t t_size = 7;
-uint32_t x_size = 6*t_size;
-uint32_t y_size = 8*t_size;
-uint32_t last_msg_ln = 0;
-
-String ols_str = ""; 
-
-void redraw(String);
+// SingleString *ss;
+PageBuilder*pb;
 
 void setup() {
   Serial.begin(9600);
@@ -41,42 +36,30 @@ void setup() {
   tft.begin();
   tft.setRotation(3);
   tft.clearScreen();
+  tft.setCursor(0,0);
+  tft.setTextSize(7);
+  tft.setTextColor(BLUE);
+  tft.print("Ready");
+  delay(500);
+  tft.fillScreen(BLACK);
 
+  pb = new PageBuilder(&tft);
+  byte arr[] = {0x01,
+                0x01,0x00,0x00,
+                0x02,0x00,0xf1,
+                0x03,0x03,
+                0x04,0x97,0x00};
+  pb->ReadString(arr, 13);
+  pb->DrawPage();
+  // ss = new SingleString("ready", {0,0}, &tft, 7U);
+  // ss->Draw();
+  // ss->SetPos(0,32);
   delay(100);
 }
 
 void loop() {
-  String s = "";
-
-  if (Serial.available()){
-    s = Serial.readString();
-
-  };
-
-  if (s != ""){
-    tft.setTextColor(RED);
-    tft.setTextSize(t_size);
-    // tft.clearScreen();
-
-    tft.setCursor(0, 0);
-
-    if (ols_str != s)
-    {
-      ols_str = s;
-      redraw(s);
-    }
-  }
-}
-
-void redraw(String str)
-{
-  for (uint32_t i=0; i<last_msg_ln; i++){
-    tft.fillRect(x_size*i, 0, x_size, y_size, BLACK);
-    delay(75);
-  }
-  for (uint32_t i=0; i<str.length(); i++){
-    tft.print(str[i]);
-    delay(75);
-  }
-  last_msg_ln = str.length();
+  // if (Serial.available()){
+  //     ss->NewString(Serial.readString());
+  //     ss->Draw();
+  // };
 }
