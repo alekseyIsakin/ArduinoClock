@@ -44,13 +44,16 @@ void setup() {
   tft.setTextColor(BLUE);
   tft.print("Ready");
   delay(500);
-  tft.fillScreen(BLACK);
 
-  pb = new PageBuilder(&tft);
+  tft.fillScreen(BLACK);
+  delay(100);
+}
+
+void loop() {
   byte arr[] = {0x01,
-                0x01,0x00,0x90,
-                0x02,0x00,0xf1,
-                0x03,0x07,
+                0x01,0x00,0x0,
+                0x02,0x00,0x1f,
+                0x03,0x03,
                 0x04,'c','b','s','\0',
                 0x01,
                 0x01,0x00,0x48,
@@ -58,39 +61,9 @@ void setup() {
                 0x03,0x07,
                 0x04,'2','2',':','1','1','\0'};
   
-  // byte arr[] = {0x01,
-  //               0x01,0x00,0x00,
-  //               0x02,0x00,0xf1,
-  //               0x03,0x07,
-  //               0x04,'2','2',':','1',0x00};
-  // byte arr2[] ={0x01,
-  //               0x01,0x00,0x48,
-  //               0x02,0x00,0xf1,
-  //               0x03,0x07,
-  //               0x04,'c','b','a',0x00};
-  // byte arr3[] ={0x01,
-  //               0x01,0x00,0x90,
-  //               0x02,0x00,0xf1,
-  //               0x03,0x07,
-  //               0x04,'c','b',0x00};
   ReadString(arr, 30);
-  // ss = new SingleString("ready", {0,0}, &tft, 7U);
-  // ss->Draw();
-  // ss->SetPos(0,32);
-  delay(100);
-}
-
-void loop() {
-  //   byte arr[] = {0x01,
-  //               0x01,0x00,0x00,
-  //               0x02,0x00,0xf1,
-  //               0x03,0x07,
-  //               0x04,'2','2',':','1','1',0x00};
-  // byte arr2[] ={0x01,
-  //               0x01,0x00,0x50,
-  //               0x02,0x00,0xf1,
-  //               0x03,0x07,
-  //               0x04,'c','b','a',0x00};
+  Serial.println("Loop");
+  delay(5*1000);
   // pb->ReadString(arr, 16);
   // pb->ReadString(arr2, 14);
   // if (Serial.available()){
@@ -99,7 +72,7 @@ void loop() {
   // };
 }
 
-SingleString*CompileSingleString(byte*str, uint32_t c_pos)
+uint32_t CompileSingleString(byte*str, uint32_t c_pos)
 {
   byte options = 1;
   uint32_t cur_pos = c_pos;
@@ -118,8 +91,8 @@ SingleString*CompileSingleString(byte*str, uint32_t c_pos)
         cur_pos += 3;
         break;
       case Color:
-        strColor += str[cur_pos+1];
-        strColor += ((uint32_t)str[cur_pos+2]) << 8;
+        strColor += (int)(str[cur_pos+1]) << 8;
+        strColor += (int)(str[cur_pos+2]) ;
         cur_pos += 3;
         break;
       case Size:
@@ -139,31 +112,29 @@ SingleString*CompileSingleString(byte*str, uint32_t c_pos)
   }
   Serial.print("Complete SingleString ");
   Serial.println(str_dt);
-  return new SingleString(str_dt, pos, &tft, 7);
+
+  tft.setCursor(pos.X, pos.Y);
+  tft.setTextSize(SizeFont);
+  tft.setTextColor(strColor);
+  tft.println(str_dt);
+
+  return cur_pos;
 }
 
 void ReadString(byte*str, uint32_t lenght)
 {
   uint64_t cur_byte = 0;
 
-  Serial.print("2_Start reading: ");
-  Serial.println((int)str[cur_byte]);
+  Serial.print("3_Start reading: ");
 
   while (cur_byte != lenght)
   {
-
     switch (str[cur_byte])
     {
       case StringElement:
-        Serial.print("cur_byte ");
-        Serial.println((int)cur_byte);
-
-        SingleString*ss = CompileSingleString(str, cur_byte+1);
-        Serial.println(ss->str);
-        Serial.println(ss->sizeFont);
-        ss->Draw();
-        cur_byte += 11;
-        cur_byte += ss->strLenght;
+        cur_byte = CompileSingleString(str, cur_byte+1);
+        cur_byte++;
+        
         delay (75);
         break;
     }
