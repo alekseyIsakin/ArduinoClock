@@ -92,7 +92,8 @@ void SingleString::SetPos(uint8_t x, uint8_t y)
   this->pos = {x, y}; 
   this->filler->SetPos(x, y);
 }
-SingleString::SingleString(String str, Point pos, Arduino_ST7789*tft, uint32_t sizeFont, int strColor, int bgColor, uint16_t tDelay)
+
+SingleString::SingleString(String str, Point pos, Arduino_ST7789*tft, uint32_t sizeFont=3, int strColor=BLUE, int bgColor=BLACK, uint16_t tDelay=75)
 {
   NewString(str);
   this->pos      = pos;
