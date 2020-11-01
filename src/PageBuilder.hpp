@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <PageClass.hpp>
 
 #ifndef PAGEBUILDER
 #define PAGEBUILDER
@@ -16,17 +15,9 @@ enum StrPageEl
   Data,
 };
 
-class PageBuilder
+struct Point
 {
-private:
-  SingleString*CompileSingleString(byte*, uint32_t);  
-
-  Arduino_ST7789* tft;
-public:
-  void ReadString(byte*, uint32_t);
-  void DrawPage();
-
-  PageBuilder(Arduino_ST7789*);
+  int X;
+  int Y;
 };
-
 #endif
