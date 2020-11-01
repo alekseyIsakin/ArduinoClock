@@ -19,7 +19,7 @@ enum StrPageEl
 class PageBuilder
 {
 private:
-  SingleString*CompileSingleString(byte*, uint32_t);  
+  SingleString CompileSingleString(byte*, uint32_t);  
 
   Arduino_ST7789* tft;
 public:

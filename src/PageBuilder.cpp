@@ -1,9 +1,9 @@
 #include <PageBuilder.hpp>
 
-SingleString*PageBuilder::CompileSingleString(byte*str, uint32_t lenght)
+SingleString PageBuilder::CompileSingleString(byte*str, uint32_t c_pos)
 {
   byte options = 1;
-  uint32_t cur_pos = 1;
+  uint32_t cur_pos = c_pos;
 
   Point pos = {0,0};
   String str_dt = "";
@@ -29,42 +29,43 @@ SingleString*PageBuilder::CompileSingleString(byte*str, uint32_t lenght)
         break;
       case Data:
         cur_pos += 1;
-        while (str[cur_pos] != 0)
+        while (str[cur_pos] != '\0')
         {
           str_dt += char(str[cur_pos]);
           cur_pos += 1;
         }
-        str_dt += "\0";
         break;
     }
     options++;
   }
-  SingleString*ss =  new SingleString(str_dt, pos, tft, SizeFont);
-
-  return ss;
+  Serial.print("Complete SingleString ");
+  Serial.println(str_dt);
+  return *(new SingleString(str_dt, pos, tft, SizeFont));
 }
 
 void PageBuilder::ReadString(byte*str, uint32_t lenght)
 {
-  Serial.println("start reading");
   uint64_t cur_byte = 0;
+
+  Serial.print("Start reading: ");
+  Serial.println((int)str[cur_byte]);
+
   while (cur_byte != lenght)
   {
 
     switch (str[cur_byte])
     {
       case StringElement:
-        SingleString*ss = CompileSingleString(str, cur_byte);
-        ss->Draw();
-        cur_byte += 11;
-        cur_byte += ss->strLenght;
-    
+        Serial.print("cur_byte ");
         Serial.println((int)cur_byte);
 
+        SingleString ss = CompileSingleString(str, cur_byte+1);
+        Serial.println(ss.str);
+        Serial.println(ss.sizeFont);
+        ss.Draw();
+        cur_byte += 11;
+        cur_byte += ss.strLenght;
 
-
-
-        delete ss;
         break;
     }
   }

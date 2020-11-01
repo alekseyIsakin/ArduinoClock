@@ -45,17 +45,31 @@ void setup() {
 
   pb = new PageBuilder(&tft);
   byte arr[] = {0x01,
-                0x01,0x00,0x00,
+                0x01,0x00,0x90,
                 0x02,0x00,0xf1,
                 0x03,0x07,
-                0x04,'a','b','c',0x00};
-  byte arr2[] ={0x01,
-                0x01,0x00,0x50,
+                0x04,'c','b','\0',
+                0x01,
+                0x01,0x00,0x48,
                 0x02,0x00,0xf1,
                 0x03,0x07,
-                0x04,'a','b','c',0x00};
-  pb->ReadString(arr, 14);
-  pb->ReadString(arr2, 14);
+                0x04,'c','b','a','s','\0'};
+  // byte arr[] = {0x01,
+  //               0x01,0x00,0x00,
+  //               0x02,0x00,0xf1,
+  //               0x03,0x07,
+  //               0x04,'2','2',':','1',0x00};
+  // byte arr2[] ={0x01,
+  //               0x01,0x00,0x48,
+  //               0x02,0x00,0xf1,
+  //               0x03,0x07,
+  //               0x04,'c','b','a',0x00};
+  // byte arr3[] ={0x01,
+  //               0x01,0x00,0x90,
+  //               0x02,0x00,0xf1,
+  //               0x03,0x07,
+  //               0x04,'c','b',0x00};
+  pb->ReadString(arr, 27);
   // ss = new SingleString("ready", {0,0}, &tft, 7U);
   // ss->Draw();
   // ss->SetPos(0,32);
@@ -63,6 +77,18 @@ void setup() {
 }
 
 void loop() {
+  //   byte arr[] = {0x01,
+  //               0x01,0x00,0x00,
+  //               0x02,0x00,0xf1,
+  //               0x03,0x07,
+  //               0x04,'2','2',':','1','1',0x00};
+  // byte arr2[] ={0x01,
+  //               0x01,0x00,0x50,
+  //               0x02,0x00,0xf1,
+  //               0x03,0x07,
+  //               0x04,'c','b','a',0x00};
+  // pb->ReadString(arr, 16);
+  // pb->ReadString(arr2, 14);
   // if (Serial.available()){
   //     ss->NewString(Serial.readString());
   //     ss->Draw();

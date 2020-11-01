@@ -15,7 +15,7 @@ struct Point
   uint8_t Y;
 };
 
-class CellMaker : BaseUIelement
+class CellMaker
 {
 private:
     int           Lenght;
@@ -42,7 +42,7 @@ public:
               int cellColor=BLACK, uint16_t tDelay=75);
 };
 
-class SingleString : BaseUIelement
+class SingleString
 {
   private:
   public:
