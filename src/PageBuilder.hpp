@@ -4,7 +4,11 @@
 #define PAGEBUILDER
 
 #define COUNT_PAGE_ELEMENT  1
-enum TPageEl { StringElement=1, };
+enum TPageEl 
+{ 
+  StringElement=65,
+  ClearCode = 127
+};
 
 #define COUNT_STR_ELEMENT_OPTIONS  4
 enum StrPageEl
@@ -17,7 +21,7 @@ enum StrPageEl
 
 struct Point
 {
-  int X;
-  int Y;
+  byte X;
+  byte Y;
 };
 #endif
