@@ -92,7 +92,6 @@ void loop() {
       for (byte i=0; i<64; i++)
         { 
           arr_old[i] = arr[i]; 
-          arr[i] = 0;
         }
 
     }
