@@ -27,15 +27,18 @@
  #07 BLK -> NC
  */
 
-void ReadString(byte*str, uint32_t lenght);
+void ReadString(byte*str, uint32_t lenght, bool erase=false);
 
 uint32_t CompileSingleString(byte*str, uint32_t c_pos, bool erase=false);
 
 Arduino_ST7789 tft = Arduino_ST7789(TFT_DC, TFT_RST);
 // SingleString *ss;
-
+byte**arr_strings = (byte**)malloc(64*sizeof(byte*));
 byte*arr = (byte*)malloc(64*sizeof(byte));
 byte*arr_old = (byte*)malloc(64*sizeof(byte));
+
+uint32_t arr_lenght = 0;
+uint32_t arr_old_lenght = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -64,26 +67,66 @@ void loop() {
   }
 
   if (Serial.available()){
-
-    // tft.setTextSize(1);
-    // tft.setCursor(0,0);
+    bool redraw = false;
+    arr_lenght = 0;
 
     String s = Serial.readString();
+    
     for (int i = 0; i<s.length(); i++){
+
+      if(!redraw && arr[i] != ((byte)s[i]))
+        redraw = true;
+      
       arr[i] = ((byte)s[i]);
       // tft.println(arr[i]);
+      arr_lenght++;
     }
 
-    CompileSingleString(arr_old, 1, 1);
-    ReadString(arr, s.length());
+    if (redraw)
+    {
+      ReadString(arr_old, arr_old_lenght, true);
 
-    for(int i=0; i<64; i++){
-      arr_old[i] = arr[i];
+      ReadString(arr, arr_lenght);
+
+      arr_old_lenght = arr_lenght;
+      for (byte i=0; i<=64; i++)
+        { arr_old[i] = arr[i]; }
+
+    }
+  }
+
+  delay(100);
+}
+
+void ReadString(byte*str, uint32_t lenght, bool erase)
+{
+  uint64_t cur_byte = 0;
+
+  Serial.println("3_Start reading: ");
+  while (cur_byte != lenght)
+  {
+    switch (str[cur_byte])
+    {
+      case StringElement:
+        cur_byte++;
+        cur_byte = CompileSingleString(str, cur_byte, erase);
+        cur_byte++;
+
+        // tft.setTextSize(5);
+        // tft.setCursor(128,128);
+        // tft.print((int)cur_byte);
+        // tft.print((int)lenght);
+        
+        Serial.println("String succeful draw");
+        break;
+        case ClearCode:
+          tft.clearScreen();
+          cur_byte++;
+          break;
     }
   }
 }
-
-uint32_t CompileSingleString(byte*str, uint32_t c_pos, bool erase=false)
+uint32_t CompileSingleString(byte*str, uint32_t c_pos, bool erase)
 {
   byte options = 1;
   uint32_t cur_pos = c_pos;
@@ -98,14 +141,20 @@ uint32_t CompileSingleString(byte*str, uint32_t c_pos, bool erase=false)
     switch (options)
     {
       case Position:
-        pos = {str[cur_pos+1], str[cur_pos+2]};
+        // tft.setTextSize(3);
+        // tft.setCursor(0,0);
+        // tft.setTextColor(RED);
+        // tft.println(str[cur_pos+1]*2);
+        // tft.println(str[cur_pos+2]*2);
+
+        pos = {str[cur_pos+1]*2, str[cur_pos+2]*2};
         cur_pos += 3;
         break;
       case Color:
         if (!erase)
         {
-          strColor += (int)(str[cur_pos+1]) << 8;
-          strColor += (int)(str[cur_pos+2]) ;
+          strColor += ((int)(str[cur_pos+1]) << 8)*2;
+          strColor += ((int)(str[cur_pos+2]))*2 ;
         }
         cur_pos += 3;
         break;
@@ -130,33 +179,12 @@ uint32_t CompileSingleString(byte*str, uint32_t c_pos, bool erase=false)
   tft.setCursor(pos.X, pos.Y);
   tft.setTextSize(SizeFont);
   tft.setTextColor(strColor);
-  tft.println(str_dt);
+
+  for(int i=0; i<str_dt.length(); i++)
+  {
+    tft.print(str_dt[i]);
+    delay(50);
+  }
 
   return cur_pos;
-}
-
-void ReadString(byte*str, uint32_t lenght)
-{
-  uint64_t cur_byte = 0;
-
-  Serial.println("3_Start reading: ");
-  while (cur_byte != lenght)
-  {
-    switch (str[cur_byte])
-    {
-      case StringElement:
-        cur_byte++;
-        cur_byte = CompileSingleString(str, cur_byte);
-        cur_byte++;
-
-        // tft.setTextSize(5);
-        // tft.setCursor(128,128);
-        // tft.print((int)cur_byte);
-        // tft.print((int)lenght);
-        
-        Serial.println("String succeful draw");
-        delay (75);
-        break;
-    }
-  }
 }
