@@ -27,9 +27,9 @@
  #07 BLK -> NC
  */
 
-void ReadString(byte*str, uint32_t lenght, bool erase=false);
+void ReadString(byte*str, byte lenght, bool erase=false);
 
-uint32_t CompileSingleString(byte*str, uint32_t c_pos, bool erase=false);
+byte CompileSingleString(byte*str, byte c_pos, bool erase=false);
 
 Arduino_ST7789 tft = Arduino_ST7789(TFT_DC, TFT_RST);
 // SingleString *ss;
@@ -37,8 +37,8 @@ byte**arr_strings = (byte**)malloc(64*sizeof(byte*));
 byte*arr = (byte*)malloc(64*sizeof(byte));
 byte*arr_old = (byte*)malloc(64*sizeof(byte));
 
-uint32_t arr_lenght = 0;
-uint32_t arr_old_lenght = 0;
+byte arr_lenght = 0;
+byte arr_old_lenght = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -81,7 +81,7 @@ void loop() {
       // tft.println(arr[i]);
       arr_lenght++;
     }
-
+    
     if (redraw)
     {
       ReadString(arr_old, arr_old_lenght, true);
@@ -89,8 +89,11 @@ void loop() {
       ReadString(arr, arr_lenght);
 
       arr_old_lenght = arr_lenght;
-      for (byte i=0; i<=64; i++)
-        { arr_old[i] = arr[i]; }
+      for (byte i=0; i<64; i++)
+        { 
+          arr_old[i] = arr[i]; 
+          arr[i] = 0;
+        }
 
     }
   }
@@ -98,11 +101,12 @@ void loop() {
   delay(100);
 }
 
-void ReadString(byte*str, uint32_t lenght, bool erase)
+void ReadString(byte*str, byte lenght, bool erase)
 {
-  uint64_t cur_byte = 0;
+  byte cur_byte = 0;
 
   Serial.println("3_Start reading: ");
+
   while (cur_byte != lenght)
   {
     switch (str[cur_byte])
@@ -119,21 +123,26 @@ void ReadString(byte*str, uint32_t lenght, bool erase)
         
         Serial.println("String succeful draw");
         break;
+
         case ClearCode:
           tft.clearScreen();
           cur_byte++;
           break;
+        default:
+          cur_byte++;
+          break;
+
     }
   }
 }
-uint32_t CompileSingleString(byte*str, uint32_t c_pos, bool erase)
+byte CompileSingleString(byte*str, byte c_pos, bool erase)
 {
   byte options = 1;
-  uint32_t cur_pos = c_pos;
+  byte cur_pos = c_pos;
 
   Point pos = {0,0};
   String str_dt = "";
-  uint32_t SizeFont = -1;
+  byte SizeFont = -1;
   int strColor = BLACK;
 
   while (options <= COUNT_STR_ELEMENT_OPTIONS)
@@ -180,7 +189,7 @@ uint32_t CompileSingleString(byte*str, uint32_t c_pos, bool erase)
   tft.setTextSize(SizeFont);
   tft.setTextColor(strColor);
 
-  for(int i=0; i<str_dt.length(); i++)
+  for(byte i=0; i<str_dt.length(); i++)
   {
     tft.print(str_dt[i]);
     delay(50);
