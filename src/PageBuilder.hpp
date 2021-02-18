@@ -7,6 +7,7 @@
 enum TPageEl 
 { 
   StringElement=65,
+  TimeElement,
   ClearCode = 127
 };
 

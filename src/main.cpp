@@ -27,6 +27,8 @@
  #07 BLK -> NC
  */
 
+#define DEBUG 0
+
 void ReadString(byte*str, byte lenght, bool erase=false);
 
 byte CompileSingleString(byte*str, byte c_pos, bool erase=false);
@@ -72,15 +74,27 @@ void loop() {
 
     String s = Serial.readString();
     
-    for (int i = 0; i<s.length(); i++){
+    for (uint8_t i = 0; i<s.length(); i++){
 
       if(!redraw && arr[i] != ((byte)s[i]))
         redraw = true;
       
       arr[i] = ((byte)s[i]);
-      // tft.println(arr[i]);
+
       arr_lenght++;
     }
+      
+    #if DEBUG
+    tft.clearScreen();
+    tft.setCursor(0,120);
+    tft.setTextSize(2);
+    tft.setTextColor(GREEN);
+    for (int i = 0; i<s.length(); i++)
+    {
+      tft.print(arr[i]);
+      tft.print("_");
+    }
+    #endif
     
     if (redraw)
     {
@@ -92,7 +106,6 @@ void loop() {
       for (byte i=0; i<64; i++)
         { 
           arr_old[i] = arr[i]; 
-          arr[i] = 0;
         }
 
     }
@@ -105,27 +118,33 @@ void ReadString(byte*str, byte lenght, bool erase)
 {
   byte cur_byte = 0;
 
+  #if DEBUG
   Serial.println("3_Start reading: ");
-
+  #endif
+  
   while (cur_byte != lenght)
   {
     switch (str[cur_byte])
     {
+      case TimeElement:
       case StringElement:
         cur_byte++;
         cur_byte = CompileSingleString(str, cur_byte, erase);
         cur_byte++;
-
-        // tft.setTextSize(5);
-        // tft.setCursor(128,128);
-        // tft.print((int)cur_byte);
-        // tft.print((int)lenght);
         
+        #if DEBUG
         Serial.println("String succeful draw");
+        #endif
         break;
 
         case ClearCode:
+          
+          #if !DEBUG
           tft.clearScreen();
+          for (byte i=0; i<64; i++)
+            arr[i] = 0; 
+          #endif
+
           cur_byte++;
           break;
         default:
@@ -137,63 +156,40 @@ void ReadString(byte*str, byte lenght, bool erase)
 }
 byte CompileSingleString(byte*str, byte c_pos, bool erase)
 {
-  byte options = 1;
   byte cur_pos = c_pos;
 
   Point pos = {0,0};
   String str_dt = "";
-  byte SizeFont = -1;
-  int strColor = BLACK;
+  byte SizeFont = 0;
+  uint32_t strColor = BLACK;
 
-  while (options <= COUNT_STR_ELEMENT_OPTIONS)
+  pos = {str[cur_pos]*0b10, str[cur_pos+1]*0b10};
+  cur_pos += 2;
+
+  if (!erase)
   {
-    switch (options)
-    {
-      case Position:
-        // tft.setTextSize(3);
-        // tft.setCursor(0,0);
-        // tft.setTextColor(RED);
-        // tft.println(str[cur_pos+1]*2);
-        // tft.println(str[cur_pos+2]*2);
-
-        pos = {str[cur_pos+1]*2, str[cur_pos+2]*2};
-        cur_pos += 3;
-        break;
-      case Color:
-        if (!erase)
-        {
-          strColor += ((int)(str[cur_pos+1]) << 8)*2;
-          strColor += ((int)(str[cur_pos+2]))*2 ;
-        }
-        cur_pos += 3;
-        break;
-      case Size:
-        SizeFont += str[cur_pos+1];
-        cur_pos += 2;
-        break;
-      case Data:
-        cur_pos += 1;
-        while (str[cur_pos] != '\0')
-        {
-          str_dt += char(str[cur_pos]);
-          cur_pos += 1;
-        }
-        break;
-    }
-    options++;
+    strColor += ((int)(str[cur_pos]) << 8)*2;
+    strColor += ((int)(str[cur_pos+1]))*2 ;
   }
+  cur_pos += 2;
+
+  SizeFont += str[cur_pos];
+  cur_pos += 1;
+
+  #if DEBUG
   Serial.print("Complete SingleString ");
   Serial.println(str_dt);
+  #endif
 
   tft.setCursor(pos.X, pos.Y);
   tft.setTextSize(SizeFont);
   tft.setTextColor(strColor);
 
-  for(byte i=0; i<str_dt.length(); i++)
+  while (str[cur_pos] != '\0')
   {
-    tft.print(str_dt[i]);
-    delay(50);
+    tft.print(char(str[cur_pos]));
+    cur_pos += 1;
+    // delay(10);
   }
-
   return cur_pos;
 }
