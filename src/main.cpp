@@ -76,7 +76,8 @@ void loop() {
     
     for (uint8_t i = 0; i<s.length(); i++){
 
-      if(!redraw && arr[i] != ((byte)s[i]))
+      if((!redraw && arr[i] != ((byte)s[i])) || 
+         (arr_old_lenght != s.length()))
         redraw = true;
       
       arr[i] = ((byte)s[i]);
