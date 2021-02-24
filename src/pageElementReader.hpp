@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Arduino_ST7789_Fast.h>
 
 #ifndef PAGEBUILDER
 #define PAGEBUILDER
@@ -10,19 +11,15 @@ enum TPageEl
   TimeElement,
   ClearCode = 127
 };
-
-#define COUNT_STR_ELEMENT_OPTIONS  4
-enum StrPageEl
-{
-  Position=1,
-  Color,
-  Size,
-  Data,
-};
-
 struct Point
 {
   byte X;
   byte Y;
 };
+
+byte CompileSingleString(byte*str, byte c_pos, Arduino_ST7789 tft, bool erase=false);
+byte CompileTime(byte*str, byte c_pos, Arduino_ST7789 tft, bool erase=false);
+
+
+
 #endif

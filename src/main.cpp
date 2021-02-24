@@ -6,7 +6,7 @@
 #include <Adafruit_GFX.h>
 #include <Fonts/FreeSansBold9pt7b.h>
 
-#include <PageBuilder.hpp>
+#include <pageElementReader.hpp>
 
 #define TFT_DC    7
 #define TFT_RST   8 
@@ -31,7 +31,6 @@
 
 void ReadString(byte*str, byte lenght, bool erase=false);
 
-byte CompileSingleString(byte*str, byte c_pos, bool erase=false);
 
 Arduino_ST7789 tft = Arduino_ST7789(TFT_DC, TFT_RST);
 // SingleString *ss;
@@ -128,9 +127,13 @@ void ReadString(byte*str, byte lenght, bool erase)
     switch (str[cur_byte])
     {
       case TimeElement:
+        cur_byte++;
+        cur_byte = CompileTime(str, cur_byte, tft, erase);
+        cur_byte++;
+        break;
       case StringElement:
         cur_byte++;
-        cur_byte = CompileSingleString(str, cur_byte, erase);
+        cur_byte = CompileSingleString(str, cur_byte, tft, erase);
         cur_byte++;
         
         #if DEBUG
@@ -155,6 +158,7 @@ void ReadString(byte*str, byte lenght, bool erase)
     }
   }
 }
+
 byte CompileSingleString(byte*str, byte c_pos, bool erase)
 {
   byte cur_pos = c_pos;
